@@ -2,11 +2,11 @@
 
 $config = array();
 $config['os'] = (DIRECTORY_SEPARATOR == '\\') || (strtolower(substr(PHP_OS, 0, 3)) === 'win') ? 'windows' : 'linux';
-$config['dev'] = true;
+$config['dev'] = false;
 $config['use_print'] = true;
-$config['use_qr'] = true;
-$config['show_fork'] = true;
-#$config['file_format'] = 'date'; // comment in to get dateformat images
+$config['use_qr'] = false;
+$config['show_fork'] = false;
+$config['file_format'] = 'date'; // comment in to get dateformat images
 
 // FOLDERS
 // change the folders to whatever you like
@@ -47,3 +47,12 @@ foreach($config['folders'] as $directory) {
 		mkdir($directory, 0777);
 	}
 }
+
+$config['jsconfig'] = array(
+  'takephoto_countdown_amount' => 5,
+  'interphoto_timeout' => 1000,
+  'gridphoto' => true,
+  'grid_row_count' => 2,
+  'grid_col_count' => 2,
+);
+

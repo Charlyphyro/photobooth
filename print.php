@@ -21,41 +21,13 @@ if(!file_exists($filename_source)) {
 }
 
 // print
-if(file_exists($filename_source)) {
-    // copy and merge
-    if(!file_exists($filename_print)) {
-        // create qr code
-        if(!file_exists($filename_codes)) {
-            include('resources/lib/phpqrcode/qrlib.php');
-            $url = 'http://'.$_SERVER['HTTP_HOST'].'/download.php?image=';
-            QRcode::png($url.$filename, $filename_codes, QR_ECLEVEL_H, 10);
-        }
-
-        // merge source and code
-        list($width, $height) = getimagesize($filename_source);
-        $newwidth = $width + ($height / 2);
-        $newheight = $height;
-
-        $source = imagecreatefromjpeg($filename_source);
-        $code = imagecreatefrompng($filename_codes);
-        $print = imagecreatetruecolor($newwidth, $newheight);
-
-        imagefill($print, 0, 0, imagecolorallocate($print, 255, 255, 255));
-        imagecopy($print, $source , 0, 0, 0, 0, $width, $height);
-        imagecopyresized($print, $code, $width, 0, 0, 0, ($height / 2), ($height / 2), imagesx($code), imagesy($code));
-
-        imagejpeg($print, $filename_print);
-        imagedestroy($print);        
-        imagedestroy($code);
-        imagedestroy($source);
-    }
-    
+if(file_exists($filename_source)) {   
     // print image
     // fixme: move the command to the config.inc.php
     $printimage = shell_exec(
         sprintf(
             $config['print']['cmd'],
-            $filename_print
+            $filename_source
         )
     );
     echo json_encode(array('status' => 'ok', 'msg' => $printimage || ''));

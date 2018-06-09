@@ -552,3 +552,14 @@ hr.small {
 @media (max-width: 767px) {
   .takePic {
     bottom: auto; } }
+
+/* photogrid addons */
+#loader .loaderInner {
+  z-index: 1;
+}
+#loader .preview-img {
+  position: absolute;
+  transition: top 0.5s, left 0.5s, transform 0.7s;
+  max-width: 70%;
+  z-index: 0;
+}

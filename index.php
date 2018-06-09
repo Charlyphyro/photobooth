@@ -17,6 +17,7 @@ require_once('db.php');
 	<script type="text/javascript">
 		var isdev = true;
 		var gallery_newest_first = <?php echo ($config['gallery']['newest_first']) ? 'true' : 'false'; ?>;
+		var config = <?php echo json_encode($config['jsconfig']); ?>;
 	</script>
 </head>
 <body class="deselect">
