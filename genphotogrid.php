@@ -1,7 +1,7 @@
 <?php
 
-require_once('db.php');
 require_once('config.inc.php');
+require_once('db.php');
 
 $row_count = intval($_POST['row_count'], 10);
 $col_count = intval($_POST['col_count'], 10);
@@ -18,14 +18,20 @@ list($iwidth0, $iheight0) = getimagesize($filename_iphoto);
 if ($iwidth0 == 0 || $iheight0 == 0) {
 	die(json_encode(array('success' => false, 'error' => 'could not get iimage size')));
 }
-$xpadding = 30;
-$ypadding = 30;
-$width = ($xpadding + $iwidth0) * $col_count;
-$height = ($ypadding + $iheight0) * $row_count;
+
+$pgcfg = $config['photogrid'];
+$lmargin = $pgcfg['grid_leftmargin'];
+$rmargin = $pgcfg['grid_rightmargin'];
+$tmargin = $pgcfg['grid_topmargin'];
+$bmargin = $pgcfg['grid_bottommargin'];
+$xpadding = $pgcfg['grid_xpadding'];
+$ypadding = $pgcfg['grid_ypadding'];
+$width = ($xpadding + $iwidth0) * $col_count + $lmargin + $rmargin;
+$height = ($ypadding + $iheight0) * $row_count + $tmargin + $bmargin;
 $gimg = imagecreatetruecolor($width, $height);
 
-if (isset($_POST['bkg'])) {
-	$bkg_fn = 'resources/img/bg.jpg';
+if (isset($pgcfg['background_image'])) {
+	$bkg_fn = $pgcfg['background_image'];
 	$bkg = imagecreatefromjpeg($bkg_fn);
 	list($bkg_width, $bkg_height) = getimagesize($bkg_fn);
 	imageCopyFill($gimg, $bkg, $bkg_width, $bkg_height, 0, 0, $width, $height);
@@ -46,10 +52,14 @@ foreach ($_POST['image'] as $index => $ifn) {
 	list($iwidth, $iheight) = getimagesize($iimg_path);
 	$ci = $index % $col_count;
 	$ri = floor($index / $col_count);
-	$x = round(($ci + 0.5) * $xpadding + $ci * $iwidth0);
-	$y = round(($ri + 0.5) * $ypadding + $ri * $iheight0);
+	$x = $lmargin + round(($ci + 0.5) * $xpadding + $ci * $iwidth0);
+	$y = $tmargin + round(($ri + 0.5) * $ypadding + $ri * $iheight0);
 	imageCopyFill($gimg, $iimg, $iwidth, $iheight, $x, $y, $iwidth0, $iheight0);
 	imagedestroy($iimg);
+}
+
+if (isset($pgcfg['overlay_image'])) {
+	drawImageWithLoc($gimg, 0, 0, $width, $height, $pgcfg['overlay_image']);
 }
 
 switch(isset($config['file_format']) ? $config['file_format'] : ''){
@@ -69,7 +79,7 @@ mkThumbnail($filename_photo, $filename_thumb);
 
 // insert into database
 $images[] = $file;
-file_put_contents('data.txt', json_encode($images));
+file_put_contents($config['db'], json_encode($images));
 
 // send imagename to frontend
 echo json_encode(array('success' => true, 'img' => $file));
@@ -98,5 +108,44 @@ function mkThumbnail($filename_photo, $filename_thumb) {
 	$thumb = imagecreatetruecolor($newwidth, $newheight);
 	imagecopyresized($thumb, $source, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
 	imagejpeg($thumb, $filename_thumb);
+}
+function drawImageWithLoc($dest, $dx, $dy, $dw, $dh, $data) {
+	list($sw, $sh) = getimagesize($data['src']);
+	$source = imagecreatefromjpeg($data['src']);
+    $sx = 0;
+    $sy = 0;
+    $tdx = $dx;
+    $tdy = $dy;
+    $tdw = $sw;
+    $tdh = $sh;
+	if (isset($data['left'])) {
+		$tdx = $dx + $data['left'];
+    }
+	if (isset($data['top'])) {
+		$tdy = $dy + $data['top'];
+    }
+	if (isset($data['right'])) {
+		if (isset($data['left'])) {
+			$tdw = $dw - $data['right'] - $dy;
+		} else {
+			$tdx = $dw - $data['right'] - $tdw + $dy;
+		}
+    }
+	if (isset($data['bottom'])) {
+		if (isset($data['top'])) {
+			$tdh = $dh - $data['bottom'] - $dy;
+		} else {
+			$tdy = $dy + $dh - $data['bottom'] - $tdh;
+		}
+    }
+	if (isset($data['vcenter'])) {
+		$tdy = $dx + ($dh - $tdh) / 2;
+    }
+	if (isset($data['hcenter'])) {
+		$tdx = $dx + ($dw - $tdw) / 2;
+    }
+	if ($tdw > 0 && $tdh > 0) {
+		imagecopyresized($dest, $source, $tdx, $tdy, $sx, $sy, $tdw, $tdh, $sw, $sh);
+	}
 }
 

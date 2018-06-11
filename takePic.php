@@ -1,7 +1,7 @@
 <?php
 
-require_once('db.php');
 require_once('config.inc.php');
+require_once('db.php');
 
 switch(isset($config['file_format']) ? $config['file_format'] : ''){
 	case 'date':
@@ -43,7 +43,7 @@ imagejpeg($thumb, $filename_thumb);
 
 // insert into database
 $images[] = $file;
-file_put_contents('data.txt', json_encode($images));
+file_put_contents($config['db'], json_encode($images));
 
 // send imagename to frontend
 echo json_encode(array('success' => true, 'img' => $file));

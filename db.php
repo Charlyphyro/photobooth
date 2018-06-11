@@ -1,6 +1,6 @@
 <?php
-// get data from data.txt
-if(!file_exists('data.txt')){
-	file_put_contents('data.txt', json_encode(array()));
+// get data from $config['db']
+if(!file_exists($config['db'])){
+	file_put_contents($config['db'], json_encode(array()));
 }
-$images = json_decode(file_get_contents('data.txt'));
+$images = json_decode(file_get_contents($config['db']));

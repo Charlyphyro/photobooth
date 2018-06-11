@@ -13,7 +13,8 @@ $config['file_format'] = 'date'; // comment in to get dateformat images
 $config['folders']['images'] = 'images';
 $config['folders']['thumbs'] = 'thumbs';
 $config['folders']['qrcodes'] = 'qrcodes';
-$config['folders']['print'] = 'print';
+// $config['folders']['print'] = 'print'; // is not used anymore
+$config['db'] = 'data.json';
 
 // GALLERY
 // should the gallery list the newest pictures first?
@@ -34,7 +35,7 @@ switch($config['os']) {
 	case 'linux':
 	default:
 	$config['take_picture']['cmd'] = 'sudo gphoto2 --capture-image-and-download --filename=%s images';
-	$config['take_picture']['msg'] = 'New file is in location';
+        $config['take_picture']['msg'] = 'New file is in location';
 	$config['print']['cmd'] = 'sudo lp -o landscape fit-to-page %s';
 	$config['print']['msg'] = '';
 	break;
@@ -47,6 +48,21 @@ foreach($config['folders'] as $directory) {
 		mkdir($directory, 0777);
 	}
 }
+
+$config['photogrid'] = array(
+  'grid_xpadding' => 50,
+  'grid_ypadding' => 50,
+  'grid_leftmargin' => 20,
+  'grid_topmargin' => 20,
+  'grid_bottommargin' => 20,
+  'grid_rightmargin' => 220,
+  'overlay_image'  => array(
+    'src' => 'resources/img/photogrid-label.jpg',
+    'right' => 50,
+    'vcenter' => true
+  ),
+  'background_image' => 'resources/img/bg.jpg'
+);
 
 $config['jsconfig'] = array(
   'takephoto_countdown_amount' => 5,

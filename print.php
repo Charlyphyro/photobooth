@@ -10,8 +10,6 @@ if($pos = strpos($filename, '?')) {
 }
 
 $filename_source = $config['folders']['images'] . DIRECTORY_SEPARATOR . $filename;
-$filename_print = $config['folders']['print'] . DIRECTORY_SEPARATOR . $filename;
-$filename_codes = $config['folders']['qrcodes'] . DIRECTORY_SEPARATOR . $filename;
 $filename_thumb = $config['folders']['thumbs'] . DIRECTORY_SEPARATOR . $filename;
 $status = false;
 
