@@ -4,7 +4,7 @@ $config = array();
 $config['os'] = (DIRECTORY_SEPARATOR == '\\') || (strtolower(substr(PHP_OS, 0, 3)) === 'win') ? 'windows' : 'linux';
 $config['dev'] = false;
 $config['use_print'] = true;
-$config['use_qr'] = false;
+$config['use_qr'] = true;
 $config['show_fork'] = false;
 $config['file_format'] = 'date'; // comment in to get dateformat images
 
@@ -36,7 +36,8 @@ switch($config['os']) {
 	default:
 	$config['take_picture']['cmd'] = 'sudo gphoto2 --capture-image-and-download --filename=%s images';
         $config['take_picture']['msg'] = 'New file is in location';
-	$config['print']['cmd'] = 'sudo lp -o landscape fit-to-page %s';
+	$config['print']['cmd'] = 'sudo lp -d Canon_Selphy_CP1200 -o landscape -o media=Custom.100x148mm -o fit-to-page %s';
+	$config['print']['dev'] = 'gpicview %s';
 	$config['print']['msg'] = '';
 	break;
 }
@@ -50,12 +51,12 @@ foreach($config['folders'] as $directory) {
 }
 
 $config['photogrid'] = array(
-  'grid_xpadding' => 50,
-  'grid_ypadding' => 50,
-  'grid_leftmargin' => 20,
-  'grid_topmargin' => 20,
-  'grid_bottommargin' => 20,
-  'grid_rightmargin' => 220,
+  'grid_xpadding' => 100,
+  'grid_ypadding' => 100,
+  'grid_leftmargin' => 150,
+  'grid_topmargin' => 150,
+  'grid_bottommargin' => 150,
+  'grid_rightmargin' => 1000,
   'overlay_image'  => array(
     'src' => 'resources/img/photogrid-label.jpg',
     'right' => 50,
